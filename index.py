@@ -2,13 +2,13 @@ import pygame
 from sys import exit
 
 pygame.init()
-screen = pygame.display.set_mode((800, 400))
+screen = pygame.display.set_mode((400, 500))
 pygame.display.set_caption("Whale game")
 clock = pygame.time.Clock()
 
 
 background = pygame.image.load("images/background.png").convert()
-whale =  pygame.transform.scale(pygame.image.load("images/whale.png"), (100, 100)).convert_alpha()
+whale =  pygame.transform.scale(pygame.image.load("images/WhaleNormal.png"), (100, 100)).convert_alpha()
 whale_rect = whale.get_rect(midbottom = (50, 290))
 pollution =  pygame.transform.scale(pygame.image.load("images/pollution.png"), (100, 100)).convert_alpha()
 pollution_rect = pollution.get_rect(midbottom = (850, 290))
