@@ -6,15 +6,19 @@ screen = pygame.display.set_mode((400, 500))
 pygame.display.set_caption("Whale game")
 clock = pygame.time.Clock()
 
-
+#Images 
 background = pygame.image.load("images/background.png").convert()
 
-krill = pygame.image.load("images/Krill.png").convert()
-krill_x_pos = random.randint(0,400)
-krill_y_pos = 0
+#Krills 
+krill_y_pos = 0 
+krill = pygame.image.load("images/Krill.png").convert_alpha()
+krill_rect = krill.get_rect(midtop = (random.randint(0,400), krill_y_pos))
+
+
+bad_krill = pygame.image.load("images/BadKrill.png").convert_alpha()
 
 whale =  pygame.transform.scale(pygame.image.load("images/WhaleNormal.png"), (100, 100)).convert_alpha()
-whale_rect = whale.get_rect(midbottom = (50, 290))
+whale_rect = whale.get_rect(midbottom = (200, 490))
 
 pollution =  pygame.transform.scale(pygame.image.load("images/pollution.png"), (100, 100)).convert_alpha()
 pollution_rect = pollution.get_rect(midbottom = (850, 290))
@@ -53,12 +57,11 @@ while True:
     screen.blit(background, (0, 0))
     screen.blit(whale, whale_rect)
     screen.blit(pollution, pollution_rect)
-
-    krill_y_pos += 1
-    screen.blit(krill,(krill_x_pos, krill_y_pos))
+    krill_rect.y += 1 
+    screen.blit(krill, krill_rect)
 
     if starting_text:
-        screen.blit(starting_text, (200,200))
+        screen.blit(starting_text, (100,200))
 
     
 
