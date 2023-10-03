@@ -6,28 +6,36 @@ screen = pygame.display.set_mode((400, 500))
 pygame.display.set_caption("Whale game")
 clock = pygame.time.Clock()
 
-#Images 
+#Scores 
+krill_count = 0 
+
+#Images-------------------------------------
 background = pygame.image.load("images/background.png").convert()
-
-#Krills 
-krill_y_pos = 0 
+#Krills
 krill = pygame.image.load("images/Krill.png").convert_alpha()
-krill_rect = krill.get_rect(midtop = (random.randint(0,400), krill_y_pos))
-
-
-bad_krill = pygame.image.load("images/BadKrill.png").convert_alpha()
-
+bad_krill = pygame.transform.scale(pygame.image.load("images/BadKrill.png"),(50,50)).convert_alpha()
+#Whales 
 whale =  pygame.transform.scale(pygame.image.load("images/WhaleNormal.png"), (100, 100)).convert_alpha()
+whale_happy = pygame.transform.scale(pygame.image.load("images/WhaleHappy.png"), (100,100)).convert_alpha()
+whale_sad = pygame.transform.scale(pygame.image.load("images/WhaleSad.png"),(100,100)).convert_alpha()
+#Bad stuff 
+pollution = pygame.transform.scale(pygame.image.load("images/pollution.png"),(100,100)).convert_alpha()
+
+#Text 
+starting_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("Whale Pollution", True, "Black").convert_alpha()
+start_1 = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("click anywhere to start", True, "Black").convert_alpha()
+
+#Rectangles--------------------------------------------
+krill_rect = krill.get_rect(midtop = (random.randint(0,400), 0))
 whale_rect = whale.get_rect(midbottom = (200, 490))
+pollution_rect = pollution.get_rect(midtop= (random.randint(0,400), 0))
 
-pollution =  pygame.transform.scale(pygame.image.load("images/pollution.png"), (100, 100)).convert_alpha()
-pollution_rect = pollution.get_rect(midbottom = (850, 290))
+start_1_rect = start_1.get_rect(midtop = (200,250))
 
-starting_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("To start click any key", True, "Black").convert_alpha()
+#Functionality
 speed = 0
 
-test_surface = pygame.Surface((100,200))
-
+#Body
 while True:
     
     keys = pygame.key.get_pressed()  # Checking pressed keys
@@ -49,19 +57,28 @@ while True:
         if event.type == pygame.KEYDOWN and starting_text:
             speed = 1
             starting_text = False
+            start_1 = False
 
-
-    pollution_rect.x -= 1 * speed
+    #How fast each thing moves 
+    pollution_rect.y += 1 * speed
+    krill_rect.y += 1 * speed
 
     #Placing the surfaces
     screen.blit(background, (0, 0))
     screen.blit(whale, whale_rect)
     screen.blit(pollution, pollution_rect)
-    krill_rect.y += 1 
     screen.blit(krill, krill_rect)
 
+    #Check for Collisions 
+    if whale_rect.colliderect(krill_rect):
+        krill_count += 1 
+
+    #Starting Screen 
     if starting_text:
         screen.blit(starting_text, (100,200))
+    if start_1:
+        pygame.draw.rect(screen, 'Pink', start_1_rect)
+        screen.blit(start_1, start_1_rect)
 
     
 
