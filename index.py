@@ -13,7 +13,7 @@ krill_count = 0
 background = pygame.transform.scale(pygame.image.load("images/background.png").convert_alpha(),(400,500))
 #Krills
 krill = pygame.image.load("images/Krill.png").convert_alpha()
-bad_krill = pygame.transform.scale(pygame.image.load("images/BadKrill.png"),(50,50)).convert_alpha()
+bad_krill = pygame.transform.scale(pygame.image.load("images/BadKrill.png"),(100,50)).convert_alpha()
 #Whales 
 whale =  pygame.transform.scale(pygame.image.load("images/WhaleNormal.png"), (100, 100)).convert_alpha()
 whale_happy = pygame.transform.scale(pygame.image.load("images/WhaleHappy.png"), (100,100)).convert_alpha()
@@ -26,9 +26,9 @@ starting_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("Whale Po
 start_1 = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("click anywhere to start", True, "Black").convert_alpha()
 
 #Rectangles--------------------------------------------
-krill_rect = krill.get_rect(midtop = (random.randint(0,400), 0))
+krill_rect = krill.get_rect(midtop = (random.randint(0,400), -100))
 whale_rect = whale.get_rect(midbottom = (200, 490))
-pollution_rect = pollution.get_rect(midtop= (random.randint(0,400), 0))
+pollution_rect = pollution.get_rect(midtop= (random.randint(0,400), -200))
 
 start_1_rect = start_1.get_rect(midtop = (200,250))
 
@@ -62,6 +62,9 @@ while True:
     #How fast each thing moves 
     pollution_rect.y += 1 * speed
     krill_rect.y += 1 * speed
+
+    if krill_rect.y > 500: krill_rect.y = -50
+    if pollution_rect.y > 500: pollution_rect.y = -200 
 
     #Placing the surfaces
     screen.blit(background, (0, 0))
