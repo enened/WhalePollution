@@ -10,7 +10,7 @@ clock = pygame.time.Clock()
 krill_count = 0 
 
 #Images-------------------------------------
-background = pygame.image.load("images/background.png").convert()
+background = pygame.transform.scale(pygame.image.load("images/background.png").convert_alpha(),(400,500))
 #Krills
 krill = pygame.image.load("images/Krill.png").convert_alpha()
 bad_krill = pygame.transform.scale(pygame.image.load("images/BadKrill.png"),(50,50)).convert_alpha()
