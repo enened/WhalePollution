@@ -22,7 +22,7 @@ test_surface = pygame.Surface((100,200))
 krills = []
 pollutions = []
 
-whale =  pygame.transform.scale(pygame.image.load("images/whaleNormal.png"), (100, 100)).convert_alpha()
+whale =  pygame.transform.scale(pygame.image.load("images/whaleNormal.png"), (70, 60)).convert_alpha()
 whale_rect = whale.get_rect(midbottom = (50, 500))
 
 
@@ -40,10 +40,22 @@ def moveWhale():
     
 
 def checkCollisions():
-    pass
-    # whalePollutionCollision = pygame.Rect.colliderect(whale_rect, pollution_rect)
-    # krillPollutionCollision = pygame.Rect.colliderect(krill_rect, pollution_rect)
+    for pollutionIndex, pollution in enumerate(pollutions):
+        for krillIndex, krill in enumerate(krills):
+            whalePollutionCollision = pygame.Rect.colliderect(whale_rect, pollution["item_rect"])
+            krillPollutionCollision = pygame.Rect.colliderect(krill["item_rect"],  pollution["item_rect"])
+            whaleKrillCollision = pygame.Rect.colliderect(whale_rect, krill["item_rect"])
 
+            if whalePollutionCollision:
+                pollutions[pollutionIndex] = 0
+            if whaleKrillCollision:
+                krills[krillIndex] = 0
+            if krillPollutionCollision:
+                krill["item_rect"].bottom = pollution["item_rect"].top
+        krills[:] = [i for i in krills if i != 0] 
+
+
+    pollutions[:] = [i for i in pollutions if i != 0] 
 
 def spawn_krill(amount):
     global krills
@@ -58,7 +70,7 @@ def spawn_pollution(amount):
     global pollution
     if (len(pollutions) < maxPollution):
         for x in range(amount):
-            pollution =  pygame.transform.scale(pygame.image.load("images/pollution.png"), (50, 50)).convert_alpha()
+            pollution =  pygame.transform.scale(pygame.image.load("images/pollution.png"), (30, 40)).convert_alpha()
             pollution_rect = pollution.get_rect(midbottom = (random.randint(0,400), random.randint(-500, 0)))
             pollutions.append({"item": pollution, "item_rect": pollution_rect, "speed": 1})
 
@@ -86,9 +98,6 @@ def display_multiple_items(itemArray):
     itemArray[:] = [i for i in itemArray if i != 0] 
 
 while True:
-    moveWhale()
-
-
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -98,6 +107,10 @@ while True:
             starting_text = False
             spawn_krill(random.randint(0, round(maxKrill)))
             spawn_pollution(random.randint(0, round(maxPollution)))
+
+    moveWhale()
+    checkCollisions()
+
 
     #Placing the surfaces
     screen.blit(background, (0, 0))
