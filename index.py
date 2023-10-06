@@ -29,33 +29,53 @@ whale_rect = whale.get_rect(midbottom = (50, 500))
 def moveWhale():
     keys = pygame.key.get_pressed()  # Checking pressed keys
 
-    if keys[pygame.K_d]:
+    if keys[pygame.K_d] and whale_rect.x < 330:
         whale_rect.x += 2
-    if keys[pygame.K_a]:
+    if keys[pygame.K_a]  and whale_rect.x > 1:
         whale_rect.x -= 2
-    if keys[pygame.K_w]:
+    if keys[pygame.K_w] and whale_rect.y > 5:
         whale_rect.y -= 2
-    if keys[pygame.K_s]:
+    if keys[pygame.K_s] and whale_rect.y < 440:
         whale_rect.y += 2
     
-
 def checkCollisions():
-    for pollutionIndex, pollution in enumerate(pollutions):
+    global hp
+    
+    if (len(pollutions) != 0):
+        for pollutionIndex, pollution in enumerate(pollutions):
+            for krillIndex, krill in enumerate(krills):
+                whalePollutionCollision = pygame.Rect.colliderect(whale_rect, pollution["item_rect"])
+                krillPollutionCollision = pygame.Rect.colliderect(krill["item_rect"],  pollution["item_rect"])
+                whaleKrillCollision = pygame.Rect.colliderect(whale_rect, krill["item_rect"])
+
+                if whalePollutionCollision:
+                    pollutions[pollutionIndex] = 0
+                    hp -= 1
+                if whaleKrillCollision:
+                    krills[krillIndex] = 0
+                    hp += 1
+                if krillPollutionCollision:
+                    krill["item_rect"].bottom = pollution["item_rect"].top
+            else:
+
+                whalePollutionCollision = pygame.Rect.colliderect(whale_rect, pollution["item_rect"])
+
+                if whalePollutionCollision:
+                    pollutions[pollutionIndex] = 0
+                    hp -= 1
+            krills[:] = [i for i in krills if i != 0] 
+        pollutions[:] = [i for i in pollutions if i != 0] 
+
+    else:
         for krillIndex, krill in enumerate(krills):
-            whalePollutionCollision = pygame.Rect.colliderect(whale_rect, pollution["item_rect"])
-            krillPollutionCollision = pygame.Rect.colliderect(krill["item_rect"],  pollution["item_rect"])
             whaleKrillCollision = pygame.Rect.colliderect(whale_rect, krill["item_rect"])
 
-            if whalePollutionCollision:
-                pollutions[pollutionIndex] = 0
             if whaleKrillCollision:
                 krills[krillIndex] = 0
-            if krillPollutionCollision:
-                krill["item_rect"].bottom = pollution["item_rect"].top
+                hp += 1
+
         krills[:] = [i for i in krills if i != 0] 
 
-
-    pollutions[:] = [i for i in pollutions if i != 0] 
 
 def spawn_krill(amount):
     global krills
@@ -65,15 +85,13 @@ def spawn_krill(amount):
             krill_rect = krill.get_rect(midbottom = (random.randint(0,400), random.randint(-500, 0)))
             krills.append({"item": krill, "item_rect": krill_rect, "speed": 1})
     
-
 def spawn_pollution(amount):
     global pollution
     if (len(pollutions) < maxPollution):
         for x in range(amount):
-            pollution =  pygame.transform.scale(pygame.image.load("images/pollution.png"), (30, 40)).convert_alpha()
+            pollution =  pygame.transform.scale(pygame.image.load("images/pollution.png"), (70, 100)).convert_alpha()
             pollution_rect = pollution.get_rect(midbottom = (random.randint(0,400), random.randint(-500, 0)))
             pollutions.append({"item": pollution, "item_rect": pollution_rect, "speed": 1})
-
 
 def display_multiple_items(itemArray):
     global maxKrill, maxPollution
@@ -98,6 +116,8 @@ def display_multiple_items(itemArray):
     itemArray[:] = [i for i in itemArray if i != 0] 
 
 while True:
+    hp_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("HP = " + str(hp), True, "Black").convert_alpha()
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -117,7 +137,12 @@ while True:
     screen.blit(whale, whale_rect)
     display_multiple_items(krills)
     display_multiple_items(pollutions)
+    screen.blit(hp_text, (310, 10))
+    print(krills, pollutions)
 
+    if (not len(krills) or not len(pollutions)):
+        spawn_krill(random.randint(0, round(maxKrill)))
+        spawn_pollution(random.randint(0, round(maxPollution)))
     # show starting screen and start game when a key is pressed. 
     if starting_text:
         screen.blit(starting_text, (100, 100))
