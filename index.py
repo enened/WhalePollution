@@ -7,24 +7,33 @@ screen = pygame.display.set_mode((400, 500))
 pygame.display.set_caption("Whale game")
 clock = pygame.time.Clock()
 hp = 100
-pollution_speed = 1
-krillSpeed = 1
+speed = 1
 maxKrill = 10
 maxPollution = 5
 
 # create image surfaces
 background = pygame.transform.scale(pygame.image.load("images/background.png").convert(), (400, 500))
 
-starting_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("To start click any key", True, "Black").convert_alpha()
+whale =  pygame.transform.scale(pygame.image.load("images/whaleNormal.png"), (70, 60)).convert_alpha()
+whale_rect = whale.get_rect(midbottom = (50, 500))
 
-test_surface = pygame.Surface((100,200))
+starting_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("To start click any key", True, "Black").convert_alpha()
 
 krills = []
 pollutions = []
 
-whale =  pygame.transform.scale(pygame.image.load("images/whaleNormal.png"), (70, 60)).convert_alpha()
-whale_rect = whale.get_rect(midbottom = (50, 500))
 
+def updateWhaleType():
+    global whale, whale_rect
+    if(hp > 130):
+        whale =  pygame.transform.scale(pygame.image.load("images/whaleHappy.png"), (70, 60)).convert_alpha()
+        whale_rect = whale.get_rect(midbottom = (whale_rect.midbottom[0], whale_rect.midbottom[1]))
+    elif (hp < 70):
+        whale =  pygame.transform.scale(pygame.image.load("images/whaleSad.png"), (70, 60)).convert_alpha()
+        whale_rect = whale.get_rect(midbottom = (whale_rect.midbottom[0], whale_rect.midbottom[1]))
+    else:
+        whale =  pygame.transform.scale(pygame.image.load("images/whaleNormal.png"), (70, 60)).convert_alpha()
+        whale_rect = whale.get_rect(midbottom = (whale_rect.midbottom[0], whale_rect.midbottom[1]))
 
 def moveWhale():
     keys = pygame.key.get_pressed()  # Checking pressed keys
@@ -50,19 +59,33 @@ def checkCollisions():
 
                 if whalePollutionCollision:
                     pollutions[pollutionIndex] = 0
-                    hp -= 1
+                    if (hp > 0):
+                        hp -= 1
+                    updateWhaleType()
+                        
                 if whaleKrillCollision:
                     krills[krillIndex] = 0
-                    hp += 1
+
+                    if (krill["type"] == "bad"):
+                        hp -= 1
+                    else:
+                        hp += 1
+                    updateWhaleType()
                 if krillPollutionCollision:
-                    krill["item_rect"].bottom = pollution["item_rect"].top
+                    if krill["item_rect"].bottom >  pollution["item_rect"].top:
+                        krill["item_rect"].bottom = pollution["item_rect"].top
+                    else:
+                        krill["item_rect"].top = pollution["item_rect"].bottom
             else:
 
                 whalePollutionCollision = pygame.Rect.colliderect(whale_rect, pollution["item_rect"])
 
                 if whalePollutionCollision:
                     pollutions[pollutionIndex] = 0
-                    hp -= 1
+                    if (hp > 0):
+                        hp -= 1
+                        updateWhaleType()
+
             krills[:] = [i for i in krills if i != 0] 
         pollutions[:] = [i for i in pollutions if i != 0] 
 
@@ -72,45 +95,55 @@ def checkCollisions():
 
             if whaleKrillCollision:
                 krills[krillIndex] = 0
-                hp += 1
+                if (krill["type"] == "bad"):
+                    hp -= 1
+                else:
+                    hp += 1
+
+                updateWhaleType()
 
         krills[:] = [i for i in krills if i != 0] 
 
-
-def spawn_krill(amount):
+def spawn_krill(amount, speed):
     global krills
     if(len(krills) < maxKrill):
-        for x in range(amount):
-            krill = pygame.image.load("images/krill.png").convert_alpha()
-            krill_rect = krill.get_rect(midbottom = (random.randint(0,400), random.randint(-500, 0)))
-            krills.append({"item": krill, "item_rect": krill_rect, "speed": 1})
+        if (random.randint(0, len(pollutions)) > 3):
+            badKrill =  pygame.transform.scale(pygame.image.load("images/badKrill.png"), (50, 50)).convert_alpha()
+            badKrill_rect = badKrill.get_rect(midbottom = (random.randint(0,400), random.randint(-500, 0)))
+            krills.append({"item": badKrill, "item_rect": badKrill_rect, "speed": speed, "type": "bad"})
+        else:
+            for _ in range(amount):
+                krill = pygame.image.load("images/krill.png").convert_alpha()
+                krill_rect = krill.get_rect(midbottom = (random.randint(0,400), random.randint(-500, 0)))
+                krills.append({"item": krill, "item_rect": krill_rect, "speed": speed, "type": "good"})
     
-def spawn_pollution(amount):
+def spawn_pollution(amount, speed):
     global pollution
     if (len(pollutions) < maxPollution):
         for x in range(amount):
             pollution =  pygame.transform.scale(pygame.image.load("images/pollution.png"), (70, 100)).convert_alpha()
             pollution_rect = pollution.get_rect(midbottom = (random.randint(0,400), random.randint(-500, 0)))
-            pollutions.append({"item": pollution, "item_rect": pollution_rect, "speed": 1})
+            pollutions.append({"item": pollution, "item_rect": pollution_rect, "speed": speed})
 
 def display_multiple_items(itemArray):
-    global maxKrill, maxPollution
+    global maxKrill, maxPollution, speed
 
     for index, item in enumerate(itemArray):
-
-        item["item_rect"].y += item["speed"]
+        item["item_rect"].y += item["speed"] 
         screen.blit(item["item"], item["item_rect"])
 
         if (item["item_rect"].y > 500 and maxKrill > 1):
             maxKrill -= 0.01
             maxPollution += 0.01
-            spawn_krill(random.randint(0, round(maxKrill)))
-            spawn_pollution(random.randint(0, round(maxPollution)))
+            spawn_krill(random.randint(0, round(maxKrill)), random.uniform(1, speed))
+            spawn_pollution(random.randint(0, round(maxPollution)), random.uniform(1, speed))
             itemArray[index] = 0
+            speed += 0.01
         elif(item["item_rect"].y > 500):
-            spawn_krill(random.randint(0, round(maxKrill)))
-            spawn_pollution(random.randint(0, round(maxPollution)))
+            spawn_krill(random.randint(0, round(maxKrill)), random.uniform(1, speed))
+            spawn_pollution(random.randint(0, round(maxPollution)), random.uniform(1, speed))
             itemArray[index] = 0
+            speed += 0.01
             maxPollution += .01
 
     itemArray[:] = [i for i in itemArray if i != 0] 
@@ -125,8 +158,8 @@ while True:
 
         if event.type == pygame.KEYDOWN and starting_text:
             starting_text = False
-            spawn_krill(random.randint(0, round(maxKrill)))
-            spawn_pollution(random.randint(0, round(maxPollution)))
+            spawn_krill(random.randint(0, round(maxKrill)), random.uniform(1, speed))
+            spawn_pollution(random.randint(0, round(maxPollution)), random.uniform(1, speed))
 
     moveWhale()
     checkCollisions()
@@ -138,11 +171,10 @@ while True:
     display_multiple_items(krills)
     display_multiple_items(pollutions)
     screen.blit(hp_text, (310, 10))
-    print(krills, pollutions)
 
-    if (not len(krills) or not len(pollutions)):
-        spawn_krill(random.randint(0, round(maxKrill)))
-        spawn_pollution(random.randint(0, round(maxPollution)))
+    if ((not len(krills) or not len(pollutions)) and not starting_text):
+        spawn_krill(random.randint(0, round(maxKrill)), random.uniform(1, speed))
+        spawn_pollution(random.randint(0, round(maxPollution)), random.uniform(1, speed))
     # show starting screen and start game when a key is pressed. 
     if starting_text:
         screen.blit(starting_text, (100, 100))
