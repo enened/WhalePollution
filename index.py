@@ -188,7 +188,7 @@ def display_multiple_items(itemArray):
 
 def update_level_on():
     #Between each level talk about the different bad stuff   
-    global maxPollution, level1, done1, lvl, level0, badKrill, done2
+    global maxPollution, level1, done1, lvl
     if (hp == 100 and done1==0): 
         level1 = True 
         maxPollution += 10
@@ -200,7 +200,7 @@ def update_level_on():
 while True:
     hp_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("HP = " + str(hp), True, "Black").convert_alpha()
     lvl_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("Level" + str(lvl), True, "Black").convert_alpha()
-    speed += .001 
+    speed += .0008 
 
     update_level_on()
     move_whale()
