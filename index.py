@@ -6,6 +6,7 @@ pygame.init()
 screen = pygame.display.set_mode((400, 500))
 pygame.display.set_caption("Whale game")
 clock = pygame.time.Clock()
+gameOver = False
 hp = 100
 speed = 1
 maxKrill = 10
@@ -23,19 +24,21 @@ krills = []
 pollutions = []
 
 
-def updateWhaleType():
-    global whale, whale_rect
+def update_whale_type():
+    global whale, whale_rect, gameOver
     if(hp > 130):
         whale =  pygame.transform.scale(pygame.image.load("images/whaleHappy.png"), (70, 60)).convert_alpha()
         whale_rect = whale.get_rect(midbottom = (whale_rect.midbottom[0], whale_rect.midbottom[1]))
     elif (hp < 70):
+        if hp == 0:
+            gameOver = True
         whale =  pygame.transform.scale(pygame.image.load("images/whaleSad.png"), (70, 60)).convert_alpha()
         whale_rect = whale.get_rect(midbottom = (whale_rect.midbottom[0], whale_rect.midbottom[1]))
     else:
         whale =  pygame.transform.scale(pygame.image.load("images/whaleNormal.png"), (70, 60)).convert_alpha()
         whale_rect = whale.get_rect(midbottom = (whale_rect.midbottom[0], whale_rect.midbottom[1]))
 
-def moveWhale():
+def move_whale():
     keys = pygame.key.get_pressed()  # Checking pressed keys
 
     if keys[pygame.K_d] and whale_rect.x < 330:
@@ -61,7 +64,7 @@ def checkCollisions():
                     pollutions[pollutionIndex] = 0
                     if (hp > 0):
                         hp -= 1
-                    updateWhaleType()
+                    update_whale_type()
                         
                 if whaleKrillCollision:
                     krills[krillIndex] = 0
@@ -70,7 +73,7 @@ def checkCollisions():
                         hp -= 1
                     else:
                         hp += 1
-                    updateWhaleType()
+                    update_whale_type()
                 if krillPollutionCollision:
                     if krill["item_rect"].bottom >  pollution["item_rect"].top:
                         krill["item_rect"].bottom = pollution["item_rect"].top
@@ -84,7 +87,7 @@ def checkCollisions():
                     pollutions[pollutionIndex] = 0
                     if (hp > 0):
                         hp -= 1
-                        updateWhaleType()
+                        update_whale_type()
 
             krills[:] = [i for i in krills if i != 0] 
         pollutions[:] = [i for i in pollutions if i != 0] 
@@ -148,6 +151,7 @@ def display_multiple_items(itemArray):
 
     itemArray[:] = [i for i in itemArray if i != 0] 
 
+
 while True:
     hp_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("HP = " + str(hp), True, "Black").convert_alpha()
 
@@ -161,23 +165,35 @@ while True:
             spawn_krill(random.randint(0, round(maxKrill)), random.uniform(1, speed))
             spawn_pollution(random.randint(0, round(maxPollution)), random.uniform(1, speed))
 
-    moveWhale()
+    move_whale()
     checkCollisions()
+
 
 
     #Placing the surfaces
     screen.blit(background, (0, 0))
-    screen.blit(whale, whale_rect)
-    display_multiple_items(krills)
-    display_multiple_items(pollutions)
+
+    if (gameOver):
+        end_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 50).render("GAME OVER!", True, "Black").convert_alpha()
+        screen.blit(end_text, (80, 200))
+
+    else:    
+        screen.blit(whale, whale_rect)
+        display_multiple_items(krills)
+        display_multiple_items(pollutions)
+        screen.blit(hp_text, (310, 10))
+
+        if ((not len(krills) or not len(pollutions)) and not starting_text):
+            spawn_krill(random.randint(0, round(maxKrill)), random.uniform(1, speed))
+            spawn_pollution(random.randint(0, round(maxPollution)), random.uniform(1, speed))
+
     screen.blit(hp_text, (310, 10))
 
-    if ((not len(krills) or not len(pollutions)) and not starting_text):
-        spawn_krill(random.randint(0, round(maxKrill)), random.uniform(1, speed))
-        spawn_pollution(random.randint(0, round(maxPollution)), random.uniform(1, speed))
     # show starting screen and start game when a key is pressed. 
     if starting_text:
         screen.blit(starting_text, (100, 100))
 
     pygame.display.update()
     clock.tick(60)
+
+
