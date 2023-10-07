@@ -20,8 +20,6 @@ done1 = 0
 level2 = False 
 done2 = 0 
 
-seconds = 0 
-
 #Level Placement 
 information_txt_place = (120,180)
 lvl_txt_place = (160,160)
@@ -41,12 +39,13 @@ b_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("Bad Krill", Tru
 background = pygame.transform.scale(pygame.image.load("images/background.png").convert(), (400, 500))
 
 whale =  pygame.transform.scale(pygame.image.load("images/whaleNormal.png"), (70, 60)).convert_alpha()
+pygame.display.set_icon(whale)
 whale_rect = whale.get_rect(midbottom = (50, 500))
 
 starting_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("To start click any key", True, "Black").convert_alpha()
 pollution =  pygame.transform.scale(pygame.image.load("images/pollution.png"), (70, 100)).convert_alpha()
 krill = pygame.image.load("images/krill.png").convert_alpha()
-bad_krill =  pygame.transform.scale(pygame.image.load("images/badKrill.png"), (50, 50)).convert_alpha()
+badKrill =  pygame.transform.scale(pygame.image.load("images/badKrill.png"), (50, 50)).convert_alpha()
 
 krills = []
 pollutions = []
@@ -57,7 +56,7 @@ def hp_bar():
     heart = pygame.transform.scale(pygame.image.load("images/heart_bar.png"), (30, 27)).convert_alpha()
     hearts = int(hp/10)
     if (len(l_hearts) < hearts):
-        for _ in range(hearts):
+        for _ in range(hearts + 1):
                     l_hearts.append(heart)
 
 def update_whale_type():
@@ -144,9 +143,9 @@ def checkCollisions():
         krills[:] = [i for i in krills if i != 0] 
 
 def spawn_krill(amount, speed):
-    global krills, lvl, level2
+    global krills, lvl 
     if(len(krills) < maxKrill):
-        if (random.randint(0, len(pollutions)) > 5):
+        if (random.randint(0, len(pollutions)) > 3):
             badKrill =  pygame.transform.scale(pygame.image.load("images/badKrill.png"), (50, 50)).convert_alpha()
             badKrill_rect = badKrill.get_rect(midbottom = (random.randint(0,400), random.randint(-500, 0)))
             krills.append({"item": badKrill, "item_rect": badKrill_rect, "speed": speed, "type": "bad"})
@@ -189,21 +188,21 @@ def display_multiple_items(itemArray):
 
 def update_level_on():
     #Between each level talk about the different bad stuff   
-    global maxPollution, level1, done1, lvl, level0
+    global maxPollution, level1, done1, lvl, level0, badKrill, done2
     if (hp == 100 and done1==0): 
         level1 = True 
         maxPollution += 10
         lvl += 1 
         done1 += 1
 
-
-
-
+    
 
 while True:
     hp_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("HP = " + str(hp), True, "Black").convert_alpha()
     lvl_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("Level" + str(lvl), True, "Black").convert_alpha()
-   
+    speed += .001 
+
+    update_level_on()
     move_whale()
     checkCollisions()
     update_level_on()
@@ -215,7 +214,6 @@ while True:
 
         if event.type == pygame.KEYDOWN and starting_text:
             starting_text = False
-
 
     #Placing the surfaces
     screen.blit(background, (0, 0))
@@ -251,7 +249,7 @@ while True:
         screen.blit(level_2_text, information_txt_place)
         screen.blit(lvl_text, lvl_txt_place)
         screen.blit(b_text, label_place)
-        screen.blit(bad_krill, image_place)
+        screen.blit(badKrill, image_place)
         
         if keys[pygame.K_c]:
             level2 = False 
@@ -268,16 +266,10 @@ while True:
         for i,v in enumerate(l_hearts): 
             screen.blit(v, (place_hearts_x, 10))
             place_hearts_x -= 20
-    
-
-
-
 
         if ((not len(krills) or not len(pollutions)) and not starting_text):
             spawn_krill(random.randint(0, round(maxKrill)), random.uniform(1, speed))
             spawn_pollution(random.randint(0, round(maxPollution)), random.uniform(1, speed))
-
-    seconds += 1
 
     pygame.display.update()
     clock.tick(60)
