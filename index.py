@@ -145,7 +145,8 @@ def checkCollisions():
 def spawn_krill(amount, speed):
     global krills, lvl 
     if(len(krills) < maxKrill):
-        if (random.randint(0, len(pollutions)) > 3):
+        if (random.randint(0, len(pollutions) + 1) > 5):
+            level2 = True 
             badKrill =  pygame.transform.scale(pygame.image.load("images/badKrill.png"), (50, 50)).convert_alpha()
             badKrill_rect = badKrill.get_rect(midbottom = (random.randint(0,400), random.randint(-500, 0)))
             krills.append({"item": badKrill, "item_rect": badKrill_rect, "speed": speed, "type": "bad"})
@@ -191,7 +192,7 @@ def update_level_on():
     global maxPollution, level1, done1, lvl
     if (hp == 100 and done1==0): 
         level1 = True 
-        maxPollution += 10
+        maxPollution += 5
         lvl += 1 
         done1 += 1
 
@@ -200,7 +201,7 @@ def update_level_on():
 while True:
     hp_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("HP = " + str(hp), True, "Black").convert_alpha()
     lvl_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("Level" + str(lvl), True, "Black").convert_alpha()
-    speed += .0008 
+    speed += .0001
 
     update_level_on()
     move_whale()
