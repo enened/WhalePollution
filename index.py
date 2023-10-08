@@ -13,6 +13,7 @@ maxKrill = 10
 maxPollution = 0
 
 #Levels 
+seconds = 0
 lvl = 0
 level0 = True 
 level1 = False
@@ -35,8 +36,11 @@ p_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("Trash", True, "
 k_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("Krill", True, "Black").convert_alpha()
 b_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("Bad Krill", True, "Black").convert_alpha()
 
+c_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("Press S to continue", True, "Black").convert_alpha()
 # create image surfaces
 background = pygame.transform.scale(pygame.image.load("images/background.png").convert(), (400, 500))
+wasd = pygame.transform.scale(pygame.image.load("images/wasd_i.png").convert_alpha(), (300, 300))
+wasd_t = True 
 
 whale =  pygame.transform.scale(pygame.image.load("images/whaleNormal.png"), (70, 60)).convert_alpha()
 pygame.display.set_icon(whale)
@@ -140,14 +144,17 @@ def checkCollisions():
                 else:
                     hp += 1
 
-        krills[:] = [i for i in krills if i != 0] 
+        krills[:] = [i for i in krills if i != 0]
 
 def spawn_krill(amount, speed):
-    global krills, lvl 
+    global krills, lvl, level2, done2
     if(len(krills) < maxKrill):
-        level2 = True
-        if (random.randint(0, len(pollutions) + 1) > 5):
- 
+        if (random.randint(0, len(pollutions) + 1) > 6) :
+            if not(done2): 
+                level2 = True 
+                done2 += 1 
+                lvl += 1 
+
             badKrill =  pygame.transform.scale(pygame.image.load("images/badKrill.png"), (50, 50)).convert_alpha()
             badKrill_rect = badKrill.get_rect(midbottom = (random.randint(0,400), random.randint(-500, 0)))
             krills.append({"item": badKrill, "item_rect": badKrill_rect, "speed": speed, "type": "bad"})
@@ -188,15 +195,15 @@ def display_multiple_items(itemArray):
 
     itemArray[:] = [i for i in itemArray if i != 0] 
 
+
 def update_level_on():
     #Between each level talk about the different bad stuff   
-    global maxPollution, level1, done1, lvl
+    global maxPollution, level1, done1, lvl, seconds, level2
     if (hp == 100 and done1==0): 
         level1 = True 
-        maxPollution += 5
+        maxPollution += 7
         lvl += 1 
-        done1 += 1
-
+        done1 += 1       
     
 
 while True:
@@ -229,14 +236,20 @@ while True:
         if starting_text:
             screen.blit(starting_text, (100, 100))
             screen.blit(pygame.transform.scale(whale, (210,180)), (130,200))
-        else:  
+        elif wasd_t:
+            screen.blit(wasd, (100,150))
+            screen.blit(c_text, (50,200))
+            if keys[pygame.K_s]:
+                wasd_t = False 
+                level0 = True 
+        else: 
             screen.blit(level_0_text, information_txt_place)
             screen.blit(lvl_text, lvl_txt_place)
             screen.blit(k_text, label_place)
             screen.blit(krill, image_place)
 
-        if keys[pygame.K_c]:
-            level0 = False 
+            if keys[pygame.K_c]:
+                level0 = False 
 
     elif (level1): 
         screen.blit(level_1_text, information_txt_place)
@@ -255,7 +268,6 @@ while True:
         
         if keys[pygame.K_c]:
             level2 = False 
-            done2 += 1 
 
     else:    
         screen.blit(whale, whale_rect)
