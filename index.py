@@ -13,12 +13,11 @@ maxKrill = 10
 maxPollution = 0
 
 #Levels 
-seconds = 0
 lvl = 0
 level0 = True 
 level1 = False
-done1 = 0
 level2 = False 
+done1 = 0
 done2 = 0 
 
 #Level Placement 
@@ -35,8 +34,9 @@ level_0_text = pygame.transform.scale(pygame.image.load("images/lvl_0_txt.png"),
 pollution_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("Trash", True, "Black").convert_alpha()
 krill_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("Krill", True, "Black").convert_alpha()
 bad_krill_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("Bad Krill", True, "Black").convert_alpha()
-
 c_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("Press S to continue", True, "Black").convert_alpha()
+
+starting_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("To start click any key", True, "Black").convert_alpha()
 # create image surfaces
 background = pygame.transform.scale(pygame.image.load("images/background.png").convert(), (400, 500))
 wasd = pygame.transform.scale(pygame.image.load("images/wasd_i.png").convert_alpha(), (300, 300))
@@ -46,7 +46,6 @@ whale =  pygame.transform.scale(pygame.image.load("images/whaleNormal.png"), (70
 pygame.display.set_icon(whale)
 whale_rect = whale.get_rect(midbottom = (50, 500))
 
-starting_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("To start click any key", True, "Black").convert_alpha()
 pollution =  pygame.transform.scale(pygame.image.load("images/pollution.png"), (70, 100)).convert_alpha()
 krill = pygame.image.load("images/krill.png").convert_alpha()
 badKrill =  pygame.transform.scale(pygame.image.load("images/badKrill.png"), (50, 50)).convert_alpha()
@@ -195,7 +194,6 @@ def display_multiple_items(itemArray):
 
     itemArray[:] = [i for i in itemArray if i != 0] 
 
-
 def update_level_on():
     #Between each level talk about the different bad stuff   
     global maxPollution, level1, done1, lvl, seconds, level2
@@ -205,11 +203,10 @@ def update_level_on():
         lvl += 1 
         done1 += 1       
     
-
 while True:
     hp_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("HP = " + str(hp), True, "Black").convert_alpha()
     lvl_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("Level" + str(lvl), True, "Black").convert_alpha()
-    speed += .0001
+    speed += .0002
 
     update_level_on()
     move_whale()
@@ -228,10 +225,11 @@ while True:
     screen.blit(background, (0, 0))
     keys = pygame.key.get_pressed()
 
+    #Different Stages of Game 
     if (gameOver):
         end_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 50).render("GAME OVER!", True, "Black").convert_alpha()
         screen.blit(end_text, (80, 200))
-
+    #A tutorial 
     elif (level0): 
         if starting_text:
             screen.blit(starting_text, (100, 100))
@@ -251,6 +249,7 @@ while True:
             if keys[pygame.K_c]:
                 level0 = False 
 
+    #Information About Trash/Plastic
     elif (level1): 
         screen.blit(level_1_text, information_txt_place)
         screen.blit(lvl_text, lvl_txt_place)
@@ -260,6 +259,7 @@ while True:
         if keys[pygame.K_c]:
             level1 = False 
 
+    #Information About Oil Pollution 
     elif (level2): 
         screen.blit(level_2_text, information_txt_place)
         screen.blit(lvl_text, lvl_txt_place)
