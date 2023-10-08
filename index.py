@@ -265,8 +265,8 @@ while True:
 
         hp_bar()
         place_hearts_x = 350
-        for i,v in enumerate(health_hearts): 
-            screen.blit(v, (place_hearts_x, 10))
+        for i, heart in enumerate(health_hearts): 
+            screen.blit(heart, (place_hearts_x, 10))
             place_hearts_x -= 20
 
         if ((not len(krills) or not len(pollutions)) and not starting_text):
