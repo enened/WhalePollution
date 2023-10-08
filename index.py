@@ -32,9 +32,9 @@ level_2_text = pygame.transform.scale(pygame.image.load("images/lvl_2_txt.png"),
 level_1_text = pygame.transform.scale(pygame.image.load("images/lvl_1_txt.png"), (250, 150)).convert_alpha()
 level_0_text = pygame.transform.scale(pygame.image.load("images/lvl_0_txt.png"), (250, 150)).convert_alpha()
 
-p_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("Trash", True, "Black").convert_alpha()
-k_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("Krill", True, "Black").convert_alpha()
-b_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("Bad Krill", True, "Black").convert_alpha()
+pollution_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("Trash", True, "Black").convert_alpha()
+krill_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("Krill", True, "Black").convert_alpha()
+bad_krill_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("Bad Krill", True, "Black").convert_alpha()
 
 c_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("Press S to continue", True, "Black").convert_alpha()
 # create image surfaces
@@ -53,22 +53,22 @@ badKrill =  pygame.transform.scale(pygame.image.load("images/badKrill.png"), (50
 
 krills = []
 pollutions = []
-l_hearts = []
+health_hearts = []
 
 def hp_bar(): 
-    l_hearts.clear()
+    health_hearts.clear()
     heart = pygame.transform.scale(pygame.image.load("images/heart_bar.png"), (30, 27)).convert_alpha()
     hearts = int(hp/10)
-    if (len(l_hearts) < hearts):
+    if (len(health_hearts) < hearts):
         for _ in range(hearts + 1):
-                    l_hearts.append(heart)
+                    health_hearts.append(heart)
 
 def update_whale_type():
     global whale, whale_rect, gameOver
-    if(hp > 60 or hp == 60):
+    if(hp > 110):
         whale =  pygame.transform.scale(pygame.image.load("images/whaleHappy.png"), (70, 60)).convert_alpha()
         whale_rect = whale.get_rect(midbottom = (whale_rect.midbottom[0], whale_rect.midbottom[1]))
-    elif (hp < 60):
+    elif (hp < 70):
         if hp == 0:
             gameOver = True
         whale =  pygame.transform.scale(pygame.image.load("images/whaleSad.png"), (70, 60)).convert_alpha()
@@ -245,7 +245,7 @@ while True:
         else: 
             screen.blit(level_0_text, information_txt_place)
             screen.blit(lvl_text, lvl_txt_place)
-            screen.blit(k_text, label_place)
+            screen.blit(krill_text, label_place)
             screen.blit(krill, image_place)
 
             if keys[pygame.K_c]:
@@ -254,7 +254,7 @@ while True:
     elif (level1): 
         screen.blit(level_1_text, information_txt_place)
         screen.blit(lvl_text, lvl_txt_place)
-        screen.blit(p_text, label_place)
+        screen.blit(pollution_text, label_place)
         screen.blit(pollution, image_place)
         
         if keys[pygame.K_c]:
@@ -263,7 +263,7 @@ while True:
     elif (level2): 
         screen.blit(level_2_text, information_txt_place)
         screen.blit(lvl_text, lvl_txt_place)
-        screen.blit(b_text, label_place)
+        screen.blit(bad_krill_text, label_place)
         screen.blit(badKrill, image_place)
         
         if keys[pygame.K_c]:
@@ -277,8 +277,8 @@ while True:
 
         hp_bar()
         place_hearts_x = 350
-        for i,v in enumerate(l_hearts): 
-            screen.blit(v, (place_hearts_x, 10))
+        for i, heart in enumerate(health_hearts): 
+            screen.blit(heart, (place_hearts_x, 10))
             place_hearts_x -= 20
 
         if ((not len(krills) or not len(pollutions)) and not starting_text):
