@@ -145,8 +145,9 @@ def checkCollisions():
 def spawn_krill(amount, speed):
     global krills, lvl 
     if(len(krills) < maxKrill):
+        level2 = True
         if (random.randint(0, len(pollutions) + 1) > 5):
-            level2 = True 
+ 
             badKrill =  pygame.transform.scale(pygame.image.load("images/badKrill.png"), (50, 50)).convert_alpha()
             badKrill_rect = badKrill.get_rect(midbottom = (random.randint(0,400), random.randint(-500, 0)))
             krills.append({"item": badKrill, "item_rect": badKrill_rect, "speed": speed, "type": "bad"})
