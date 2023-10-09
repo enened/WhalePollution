@@ -34,17 +34,19 @@ level_0_text = pygame.transform.scale(pygame.image.load("images/lvl_0_txt.png"),
 pollution_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("Trash", True, "Black").convert_alpha()
 krill_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("Krill", True, "Black").convert_alpha()
 bad_krill_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("Bad Krill", True, "Black").convert_alpha()
-c_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("Press S to continue", True, "Black").convert_alpha()
+continue_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("Press S to continue", True, "Black").convert_alpha()
 
 starting_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("To start click any key", True, "Black").convert_alpha()
+
 # create image surfaces
 background = pygame.transform.scale(pygame.image.load("images/background.png").convert(), (400, 500))
 wasd = pygame.transform.scale(pygame.image.load("images/wasd_i.png").convert_alpha(), (300, 300))
-wasd_t = True 
+display_wasd_image = True 
 
 whale =  pygame.transform.scale(pygame.image.load("images/whaleNormal.png"), (70, 60)).convert_alpha()
 pygame.display.set_icon(whale)
 whale_rect = whale.get_rect(midbottom = (50, 500))
+whale_poisoned = False
 
 pollution =  pygame.transform.scale(pygame.image.load("images/pollution.png"), (70, 100)).convert_alpha()
 krill = pygame.image.load("images/krill.png").convert_alpha()
@@ -54,6 +56,8 @@ krills = []
 pollutions = []
 health_hearts = []
 
+
+# have different number of hearts based on hp
 def hp_bar(): 
     health_hearts.clear()
     heart = pygame.transform.scale(pygame.image.load("images/heart_bar.png"), (30, 27)).convert_alpha()
@@ -62,6 +66,7 @@ def hp_bar():
         for _ in range(hearts + 1):
                     health_hearts.append(heart)
 
+# show different whale image based on hp
 def update_whale_type():
     global whale, whale_rect, gameOver
     if(hp > 110):
@@ -76,7 +81,9 @@ def update_whale_type():
         whale =  pygame.transform.scale(pygame.image.load("images/whaleNormal.png"), (70, 60)).convert_alpha()
         whale_rect = whale.get_rect(midbottom = (whale_rect.midbottom[0], whale_rect.midbottom[1]))
 
+# move whale position based on user input
 def move_whale():
+    global hp, gameOver
     keys = pygame.key.get_pressed()  # Checking pressed keys
 
     if keys[pygame.K_d] and whale_rect.x < 330: 
@@ -87,9 +94,15 @@ def move_whale():
         whale_rect.y -= 2
     if keys[pygame.K_s] and whale_rect.y < 440:
         whale_rect.y += 2
-    
+    if whale_poisoned:
+        hp -= .01
+
+        if (hp == 0):
+            gameOver = True
+
+# check for collisions between whale, krill, and pollution and change hp and item position based on collisions. 
 def checkCollisions():
-    global hp
+    global hp, whale_poisoned
     
     if (len(pollutions) != 0):
         for pollutionIndex, pollution in enumerate(pollutions):
@@ -109,6 +122,7 @@ def checkCollisions():
 
                     if (krill["type"] == "bad"):
                         hp -= 1
+                        whale_poisoned = True
                     else:
                         hp += 1
                     update_whale_type()
@@ -140,11 +154,13 @@ def checkCollisions():
                 krills[krillIndex] = 0
                 if (krill["type"] == "bad"):
                     hp -= 1
+                    whale_poisoned = True
                 else:
                     hp += 1
 
         krills[:] = [i for i in krills if i != 0]
 
+# spawn  random amount of krill with random speed
 def spawn_krill(amount, speed):
     global krills, lvl, level2, done2
     if(len(krills) < maxKrill):
@@ -162,7 +178,8 @@ def spawn_krill(amount, speed):
                 krill = pygame.image.load("images/krill.png").convert_alpha()
                 krill_rect = krill.get_rect(midbottom = (random.randint(0,400), random.randint(-500, 0)))
                 krills.append({"item": krill, "item_rect": krill_rect, "speed": speed, "type": "good"})
-    
+
+# spawn random amounts of pollution with random speed
 def spawn_pollution(amount, speed):
     global pollution
     if (len(pollutions) < maxPollution):
@@ -171,6 +188,7 @@ def spawn_pollution(amount, speed):
             pollution_rect = pollution.get_rect(midbottom = (random.randint(0,400), random.randint(-500, 0)))
             pollutions.append({"item": pollution, "item_rect": pollution_rect, "speed": speed})
 
+# display krill and pollution and show their movements
 def display_multiple_items(itemArray):
     global maxKrill, maxPollution, speed
 
@@ -194,6 +212,7 @@ def display_multiple_items(itemArray):
 
     itemArray[:] = [i for i in itemArray if i != 0] 
 
+# update level 
 def update_level_on():
     #Between each level talk about the different bad stuff   
     global maxPollution, level1, done1, lvl, seconds, level2
@@ -204,7 +223,7 @@ def update_level_on():
         done1 += 1       
     
 while True:
-    hp_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("HP = " + str(hp), True, "Black").convert_alpha()
+    hp_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("HP = " + str(round(hp)), True, "Black").convert_alpha()
     lvl_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("Level" + str(lvl), True, "Black").convert_alpha()
     speed += .0002
 
@@ -212,7 +231,8 @@ while True:
     move_whale()
     checkCollisions()
     update_level_on()
-     
+    
+    # exit game 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -229,16 +249,17 @@ while True:
     if (gameOver):
         end_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 50).render("GAME OVER!", True, "Black").convert_alpha()
         screen.blit(end_text, (80, 200))
-    #A tutorial 
+    
+    # tutorial level
     elif (level0): 
         if starting_text:
             screen.blit(starting_text, (100, 100))
             screen.blit(pygame.transform.scale(whale, (210,180)), (130,200))
-        elif wasd_t:
+        elif display_wasd_image:
             screen.blit(wasd, (100,150))
-            screen.blit(c_text, (50,200))
+            screen.blit(continue_text, (50,200))
             if keys[pygame.K_s]:
-                wasd_t = False 
+                display_wasd_image = False 
                 level0 = True 
         else: 
             screen.blit(level_0_text, information_txt_place)
