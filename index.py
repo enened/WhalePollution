@@ -122,7 +122,7 @@ def move_whale():
             cause_of_death = "Consumption of contaminated prey"
 
 # check for collisions between whale, krill, and pollution and change hp and item position based on collisions. 
-def checkCollisions():
+def check_collisions():
     global hp, whale_poisoned, gameOver, num_pollution_despawned, cause_of_death, whale_stop
     
     for pollution_index, pollution in enumerate(pollutions):
@@ -432,13 +432,14 @@ while True:
     # game
     else: 
 
+        # display krill, pollutions, poachers
         display_multiple_items(krills)
         display_multiple_items(pollutions) 
         display_multiple_items(poachers)
 
         hp_bar()
         move_whale()
-        checkCollisions()
+        check_collisions()
 
         screen.blit(whale, whale_rect)
         screen.blit(hp_text, (20, 10))
