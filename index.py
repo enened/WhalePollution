@@ -46,8 +46,8 @@ down_movement_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 15).render("S  
 left_movement_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 15).render("A   to   move   left", True, "Black").convert_alpha()
 right_movement_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 15).render("D   to   move   right", True, "Black").convert_alpha()
 starting_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("Press   P   to   start", True, "Black").convert_alpha()
-whale_frozen_text_1 = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("The   whale   was   immobilized   by   poachers!", True, "Black").convert_alpha()
-whale_frozen_text_2 = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("Click   WASD   as   fast   to   free   yourself", True, "Black").convert_alpha()
+whale_frozen_text_1 = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("The whale was immobilized by poachers!", True, "Black").convert_alpha()
+whale_frozen_text_2 = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("Click WASD as fast to free yourself", True, "Black").convert_alpha()
 title = pygame.transform.scale(pygame.image.load("images/title.png"), (200, 100)).convert_alpha()
 
 # create image surfaces
