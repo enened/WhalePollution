@@ -14,37 +14,40 @@ max_krill = 10
 max_pollution = 0
 max_poacher = 0
 num_pollution_despawned = 0
+num_bad_krill_despawned = 0
+num_poachers_despawned = 0
+num_krill_collected = 0
 whale_stop = 0
 whale_poisoned = 0
 level = 0
 cause_of_death = ""
 
 #Level Placement 
-information_txt_place = (110,180)
-lvl_txt_place = (160,150)
-label_place = (20, 200)
-image_place = (20,250)
+information_txt_place = (110,150)
+lvl_txt_place = (160, 100)
+label_place = (10, 150)
+image_place = (10, 200)
 
 #Level Text 
-level_3_text = pygame.transform.scale(pygame.image.load("images/lvl_3_txt.png"), (290, 210)).convert_alpha()
-level_2_text = pygame.transform.scale(pygame.image.load("images/lvl_2_txt.png"), (290, 210)).convert_alpha()
-level_1_text = pygame.transform.scale(pygame.image.load("images/lvl_1_txt.png"), (290, 190)).convert_alpha()
-level_0_text = pygame.transform.scale(pygame.image.load("images/lvl_0_txt.png"), (290, 190)).convert_alpha()
-
+level_3_text = pygame.transform.scale(pygame.image.load("images/lvl_3_txt.png"), (270, 300)).convert_alpha()
+level_2_text = pygame.transform.scale(pygame.image.load("images/lvl_2_txt.png"), (270, 210)).convert_alpha()
+level_1_text = pygame.transform.scale(pygame.image.load("images/lvl_1_txt.png"), (250, 200)).convert_alpha()
+level_0_text = pygame.transform.scale(pygame.image.load("images/lvl_0_txt.png"), (270, 150)).convert_alpha()
+game_over_text = pygame.transform.scale(pygame.image.load("images/game_over_text.png"), (250, 200)).convert_alpha()
 
 # text
 pollution_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("Trash", True, "Black").convert_alpha()
 krill_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("Krill", True, "Black").convert_alpha()
-bad_krill_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("Bad Krill", True, "Black").convert_alpha()
+bad_krill_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("Bad   Krill", True, "Black").convert_alpha()
 poacher_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("Poacher", True, "Black").convert_alpha()
-continue_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("Press S to continue", True, "Black").convert_alpha()
-up_movement_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 15).render("Use W to move up", True, "Black").convert_alpha()
-down_movement_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 15).render("S to move down", True, "Black").convert_alpha()
-left_movement_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 15).render("A to move left", True, "Black").convert_alpha()
-right_movement_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 15).render("D to move right", True, "Black").convert_alpha()
-starting_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("Press P to start", True, "Black").convert_alpha()
-whale_frozen_text_1 = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("The whale was immobilized by poachers!", True, "Black").convert_alpha()
-whale_frozen_text_2 = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("Click WASD as fast to free yourself", True, "Black").convert_alpha()
+continue_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("Press   S   to   continue", True, "Black").convert_alpha()
+up_movement_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 15).render("Use   W   to   move   up", True, "Black").convert_alpha()
+down_movement_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 15).render("S   to   move   down", True, "Black").convert_alpha()
+left_movement_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 15).render("A   to   move   left", True, "Black").convert_alpha()
+right_movement_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 15).render("D   to   move   right", True, "Black").convert_alpha()
+starting_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("Press   P   to   start", True, "Black").convert_alpha()
+whale_frozen_text_1 = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("The   whale   was   immobilized   by   poachers!", True, "Black").convert_alpha()
+whale_frozen_text_2 = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 20).render("Click   WASD   as   fast   to   free   yourself", True, "Black").convert_alpha()
 title = pygame.transform.scale(pygame.image.load("images/title.png"), (200, 100)).convert_alpha()
 
 # create image surfaces
@@ -63,7 +66,7 @@ badKrill =  pygame.transform.scale(pygame.image.load("images/badKrill.png"), (50
 poacher =  pygame.transform.scale(pygame.image.load("images/poacher.png"), (100, 100)).convert_alpha()
 
 play_again_button =  pygame.transform.scale(pygame.image.load("images/play_again_button.png"), (150, 50)).convert_alpha()
-play_again_button_rect = play_again_button.get_rect(midbottom = (190, 400))
+play_again_button_rect = play_again_button.get_rect(midbottom = (190, 490))
 
 
 krills = []
@@ -117,13 +120,13 @@ def move_whale():
     if whale_poisoned and hp > 0 and not gameOver:
         hp -= whale_poisoned
 
-        if (hp < 1):
+        if (hp <= 0):
             gameOver = True
             cause_of_death = "Consumption of contaminated prey"
 
 # check for collisions between whale, krill, and pollution and change hp and item position based on collisions. 
 def check_collisions():
-    global hp, whale_poisoned, gameOver, num_pollution_despawned, cause_of_death, whale_stop
+    global hp, whale_poisoned, gameOver, num_pollution_despawned, cause_of_death, whale_stop, num_krill_collected
     
     for pollution_index, pollution in enumerate(pollutions):
         whale_pollution_collision = pygame.Rect.colliderect(whale_rect, pollution["item_rect"])
@@ -170,6 +173,7 @@ def check_collisions():
             else:
                 if (hp < 200):
                     hp += 1
+                    num_krill_collected += 1
 
     krills[:] = [i for i in krills if i != 0]
     pollutions[:] = [i for i in pollutions if i != 0] 
@@ -212,7 +216,7 @@ def spawn_poachers(amount, speed):
 
 # display krill and pollution and show their movements
 def display_multiple_items(itemArray):
-    global max_krill, max_pollution, max_poacher, speed, level, num_pollution_despawned
+    global max_krill, max_pollution, max_poacher, speed, level, num_pollution_despawned, num_bad_krill_despawned, num_poachers_despawned
 
     for index, item in enumerate(itemArray):
         if (item["type"] != "poacher" or item["first_hit"]):
@@ -230,6 +234,10 @@ def display_multiple_items(itemArray):
 
             if(item["type"] == "pollution"):
                 num_pollution_despawned += 1
+            elif (item["type"] == "bad_krill"):
+                num_bad_krill_despawned += 1
+            elif (item["type"] == "poacher"):
+                num_poachers_despawned += 1
 
             if (max_krill > 1):
                 max_krill -= 0.01
@@ -242,7 +250,7 @@ def display_multiple_items(itemArray):
 # update level 
 def update_level_on():
     #Between each level talk about the different bad stuff   
-    global max_pollution, level
+    global max_pollution, level, whale_poisoned
 
     if (hp > 100 and level < 1):
         max_pollution += 7
@@ -250,6 +258,7 @@ def update_level_on():
     if (num_pollution_despawned > 14 and level < 2):
         level = 2
     if (num_pollution_despawned > 34 and level < 3):
+        whale_poisoned = 0
         level = 3
 
 # play again
@@ -318,7 +327,7 @@ def play_again():
     poacher =  pygame.transform.scale(pygame.image.load("images/poacher.png"), (100, 100)).convert_alpha()
 
     play_again_button =  pygame.transform.scale(pygame.image.load("images/play_again_button.png"), (150, 50)).convert_alpha()
-    play_again_button_rect = play_again_button.get_rect(midbottom = (190, 400))
+    play_again_button_rect = play_again_button.get_rect(midbottom = (200, 400))
 
 
     krills = []
@@ -353,16 +362,29 @@ while True:
     #Different Stages of Game 
     if (gameOver):
         end_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 50).render("GAME OVER!", True, "Black").convert_alpha()
-        cause_of_death_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 16).render("Cause of death:  " + cause_of_death, True, "Black").convert_alpha()
+        cause_of_death_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 16).render("Cause   of   death:  " + cause_of_death, True, "Black").convert_alpha()
         
+        pollution_avoided_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 16).render("You   avoided  " + str(num_pollution_despawned) + "   pieces  of  pollution", True, "Black").convert_alpha()
+        bad_krill_avoided_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 16).render("You   avoided  " + str(num_bad_krill_despawned) + "   contaminated   krill", True, "Black").convert_alpha()
+        poachers_avoided_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 16).render("You   avoided  " + str(num_poachers_despawned) + "   poachers", True, "Black").convert_alpha()
+        krill_eaten_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 16).render("You   ate  " + str(num_krill_collected) + "   krill", True, "Black").convert_alpha()
+
         if len(cause_of_death) > 20:
             cause_of_death_text_x_coord = 5
         else:
-            cause_of_death_text_x_coord = 110
+            cause_of_death_text_x_coord = 100
 
-        screen.blit(end_text, (80, 200))
-        screen.blit(cause_of_death_text, (cause_of_death_text_x_coord, 300))
+
+        screen.blit(end_text, (80, 10))
+        screen.blit(cause_of_death_text, (cause_of_death_text_x_coord, 60))
         screen.blit(play_again_button, play_again_button_rect)
+
+        screen.blit(pollution_avoided_text, (80, 100))
+        screen.blit(bad_krill_avoided_text, (80, 130))
+        screen.blit(poachers_avoided_text, (80, 160))
+        screen.blit(krill_eaten_text, (80, 190))
+
+        screen.blit(game_over_text, (80, 220))
 
         mouse_position = pygame.mouse.get_pos()
         mouse_press = pygame.mouse.get_pressed()[0]
@@ -382,8 +404,8 @@ while True:
         elif display_wasd_image:
             screen.blit(up_movement_text, (150, 150))
             screen.blit(down_movement_text, (150, 450))
-            screen.blit(left_movement_text, (10, 300))
-            screen.blit(right_movement_text, (300, 300))
+            screen.blit(left_movement_text, (10, 280))
+            screen.blit(right_movement_text, (270, 280))
             screen.blit(wasd, (60, 150))
             screen.blit(continue_text, (110, 70))
             if keys[pygame.K_s]:
