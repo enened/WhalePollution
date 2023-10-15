@@ -362,7 +362,7 @@ while True:
     #Different Stages of Game 
     if (gameOver):
         end_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 50).render("GAME OVER!", True, "Black").convert_alpha()
-        cause_of_death_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 16).render("Cause   of   death:  " + cause_of_death, True, "Black").convert_alpha()
+        cause_of_death_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 16).render("Cause of death:  " + cause_of_death, True, "Black").convert_alpha()
         
         pollution_avoided_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 16).render("You   avoided  " + str(num_pollution_despawned) + "   pieces  of  pollution", True, "Black").convert_alpha()
         bad_krill_avoided_text = pygame.font.Font("fonts\ARCADECLASSIC.TTF", 16).render("You   avoided  " + str(num_bad_krill_despawned) + "   contaminated   krill", True, "Black").convert_alpha()
